@@ -64,7 +64,7 @@ public class StockCSV {
                 stockRowList.add("\"s_w_id\" : "+stockRow[0]); //w_id
                 stockRowList.add("\"s_i_id\" : "+stockRow[1]); //i_id
                 //stockRowList.add("\"s_i_ref\" :ObjectId( \""+ items.get(Integer.parseInt(stockRow[1]))+"\")"); //i_id
-                stockRowList.add("\"s_quantity\" : "+stockRow[2]); //s_quantity
+                stockRowList.add("\"s_quantity\" : "+ new Double(stockRow[2])); //s_quantity
                 stockRowList.add("\"s_ytd\" : "+stockRow[3]); //s_ytd
                 stockRowList.add("\"s_order_cnt\" : "+stockRow[4] +""); //s_order_cnt
                 stockRowList.add("\"s_remote_cnt\" : "+stockRow[5]+""); //s_remote_cnt

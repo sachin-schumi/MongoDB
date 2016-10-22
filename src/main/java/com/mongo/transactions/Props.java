@@ -14,6 +14,7 @@ public class Props {
     {
         try {
             if(properties == null) {
+                properties = new Properties();
                 String configFilePath = System.getenv("DD_CONFIG_FILE");
                 //export DD_CONFIG_FILE="/Users/ritesh/Documents/projects/nus/config.properties"
                 InputStream inputStream = new FileInputStream(configFilePath);
