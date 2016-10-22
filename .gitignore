@@ -1,0 +1,10 @@
+# MACOSx
+__MACOSX
+# .idea
+.idea/
+# target
+target/
+# ignore lucene
+lucene-index
+# out
+out
