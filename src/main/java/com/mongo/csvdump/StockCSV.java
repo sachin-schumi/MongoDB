@@ -21,6 +21,7 @@ public class StockCSV {
 
     private Map<Integer,Object> items = new HashMap<Integer,Object>();
 
+    /*
     public void getItems()
     {
         try {
@@ -43,6 +44,7 @@ public class StockCSV {
             e.printStackTrace();
         }
     }
+    */
 
     public void prepareCsv(Properties properties) {
         String csv_dump_path = properties.getProperty("csv_dump_path");
@@ -55,7 +57,7 @@ public class StockCSV {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             CSVReader stockCsv = new CSVReader(inputStreamReader);
             Iterator<String[]> iterator = stockCsv.iterator();
-            getItems();
+            //getItems();
             while(iterator.hasNext()) {
                 List<String> stockRowList = new ArrayList<String>();
                 String[] stockRow = iterator.next();

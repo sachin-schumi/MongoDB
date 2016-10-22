@@ -1,0 +1,5 @@
+mongoimport --db thehood --collection orders --drop --file C:/DD/D8-data/csvFIles_1/new_order_transaction.json
+mongoimport --db thehood --collection stock --drop --file C:/DD/D8-data/csvFIles_1/stock.json
+mongoimport --db thehood --collection customer --drop --file C:/DD/D8-data/csvFIles_1/customer.json
+mongoimport --db thehood --collection items --drop --file C:/DD/D8-data/csvFIles_1/items.json
+mongoimport --db thehood --collection warehouse --drop --file C:/DD/D8-data/csvFIles_1/warehouse.json

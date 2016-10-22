@@ -55,7 +55,7 @@ public class CustomerCSV {
                 customerRowList.add("\"c_zip\" :\""+customerRow[10]+ "\""); //zip
                 customerRowList.add("\"c_phone\" :\""+customerRow[11]+ "\""); //c_phone
                 String formattedDate = formatDateAsIso8601(customerRow[12],"yyyy-MM-dd HH:mm:ss.S");
-                customerRowList.add("\"c_since\" :ISODATE(\""+formattedDate+ "\")"); //since
+                customerRowList.add("\"c_since\" :ISODate(\""+formattedDate+ "\")"); //since
                 customerRowList.add("\"c_credit\" :\""+customerRow[13]+ "\""); //credit
                 customerRowList.add("\"c_credit_lim\" :"+customerRow[14]+ ""); //credit_lim
                 customerRowList.add("\"c_discount\" :"+customerRow[15]+ ""); //discount
