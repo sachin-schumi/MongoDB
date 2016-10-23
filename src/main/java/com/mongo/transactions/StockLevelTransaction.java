@@ -9,6 +9,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import static com.mongo.transactions.LocalCache.d_next_oid_map;
+import static com.mongo.transactions.LocalCache.items_price_map;
 
 public class StockLevelTransaction {
     static MongoCollection orders_collection ;
@@ -36,34 +37,44 @@ public class StockLevelTransaction {
             Map<Integer, List<Integer>> orderItemsMapping = new HashMap<Integer, List<Integer>>();
 
             MongoCursor<Document>  cursor = orders_collection.find(andQuery).iterator();
-
-            while(cursor.hasNext())
-            {
+            Set<Integer> itemids = new HashSet<Integer>();
+            while(cursor.hasNext()) {
                 Document next = cursor.next();
                 ArrayList orders = (ArrayList) next.get("o_items");
-                Set<Integer> itemids = new HashSet<Integer>();
-                for(Object order : orders)
-                {
-                    Document d = (Document)order;
+                for (Object order : orders) {
+                    Document d = (Document) order;
                     int itemId = (Integer) d.get("i_id");
                     itemids.add(itemId);
                 }
-                andQuery = new BasicDBObject();
-                obj = new ArrayList<BasicDBObject>();
-                obj.add(new BasicDBObject("s_w_id", w_id));
-                obj.add(new BasicDBObject("s_i_id", new BasicDBObject("$in",itemids)));
-                andQuery.put("$and", obj);
-                MongoCursor<Document>  items_cursor = stocks_collection.find(andQuery).iterator();
-                while(items_cursor.hasNext())
-                {
-                    next = cursor.next();
-                    double quantity = next.getDouble("s_quantity");
-                    if(quantity < threshold)
-                        System.out.println("Less");
-                }
-
-
             }
+            andQuery = new BasicDBObject();
+            obj = new ArrayList<BasicDBObject>();
+            obj.add(new BasicDBObject("s_w_id", w_id));
+            obj.add(new BasicDBObject("s_i_id", new BasicDBObject("$in",itemids)));
+            obj.add(new BasicDBObject("s_quantity", new BasicDBObject("$lt", threshold)));
+            andQuery.put("$and", obj);
+            MongoCursor<Document>  items_cursor = stocks_collection.find(andQuery).iterator();
+            printWriter.write("STOCK LEVEL TRANSACTION--------" + "\n");
+
+            if(items_cursor.hasNext() == false) {
+                printWriter.write("No Items below threshold quantity " + threshold + "\n");
+            }
+            else {
+                printWriter.write("Threshold = " + threshold + "\n");
+            }
+
+            while(items_cursor.hasNext())
+            {
+                Document next = items_cursor.next();
+                int item_id = (Integer)next.get("s_i_id");
+                double item_quantity = next.getDouble("s_quantity");
+                printWriter.write("Item id : " + item_id + " | ");
+                printWriter.write("Item name : " + items_price_map.get(item_id) + " | ");
+                printWriter.write("Item quantity " + item_quantity + "\n");
+            }
+
+            printWriter.write("\n");
+            printWriter.flush();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -6,8 +6,10 @@ import com.mongodb.client.MongoDatabase;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Properties;
 
 /**
@@ -26,9 +28,10 @@ public class TransactionClient {
             InputStream inputStream = new FileInputStream(configFilePath);
             props.load(inputStream);
             PropertyConfigurator.configure(props);
+            PrintWriter printWriter = new PrintWriter(new File(properties.getProperty("output_path")));
 
-            TransactionDriver t = new TransactionDriver(sesion, null, null, null, null, 0, properties.getProperty("transactions_dir"));
-            t.readTransactionFiles(null, null);
+            TransactionDriver t = new TransactionDriver(sesion, null, printWriter, null, null, 1, properties.getProperty("transactions_dir"));
+            t.readTransactionFiles(null, printWriter);
         }
         catch (Exception e)
         {

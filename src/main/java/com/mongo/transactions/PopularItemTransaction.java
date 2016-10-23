@@ -9,18 +9,20 @@ import org.bson.Document;
 import java.io.PrintWriter;
 import java.util.*;
 
+import static com.mongo.transactions.LocalCache.customer_map;
 import static com.mongo.transactions.LocalCache.d_next_oid_map;
+import static com.mongo.transactions.LocalCache.items_name_map;
 
 public class PopularItemTransaction {
 
 
     static MongoCollection orders_collection ;
-    static MongoCollection stock_collection;
+    static MongoCollection stocks_collection;
 
     public PopularItemTransaction(MongoDatabase session)
     {
         orders_collection = session.getCollection("orders");
-        stock_collection = session.getCollection("customer");
+        stocks_collection = session.getCollection("stock");
     }
 
     public void checkPopularItem(int w_id, int d_id, int num_last_orders, PrintWriter printWriter) {
@@ -37,14 +39,20 @@ public class PopularItemTransaction {
             obj.add(new BasicDBObject("o_id", new BasicDBObject("$gte", start_index).append("$lte", d_next_oid)));
             andQuery.put("$and", obj);
 
+            printWriter.write("POPULAR ITEM TRANSACTION--------" + "\n");
+            printWriter.write("(W_ID, D_ID, NUM_OF_LAST_ORDER_TO_BE_EXAMINED)(" + w_id + ", " + d_id + ", " + num_last_orders + ")\n");
+
             MongoCursor<Document> cursor = orders_collection.find(andQuery).iterator();
             Map<Integer, List<Integer>> orderItemsMapping = new HashMap<Integer, List<Integer>>();
-
+            Set<Integer> itemids = new HashSet<Integer>();
             while (cursor.hasNext()) {
                 Document next = cursor.next();
                 ArrayList orders = (ArrayList) next.get("o_items");
-                Set<Integer> itemids = new HashSet<Integer>();
+                Date o_entry_d = (Date)next.get("o_entry_d");
                 int order_id = (Integer) next.get("o_id");
+                int c_id = (Integer)next.get("o_c_id");
+                String customer_name = customer_map.get(c_id+"").split(",")[0];
+                printWriter.write("(O_ID, O_ENTRY_D, CUST_NAME)(" + order_id + ", " + o_entry_d + ", " + customer_name + "\n");
                 for (Object order : orders) {
                     Document d = (Document) order;
                     int itemId = (Integer) d.get("i_id");
@@ -58,15 +66,17 @@ public class PopularItemTransaction {
                     items.add(itemId);
                     orderItemsMapping.put(order_id, items);
                 }
-                andQuery = new BasicDBObject();
-                obj = new ArrayList<BasicDBObject>();
-                obj.add(new BasicDBObject("s_w_id", w_id));
-                obj.add(new BasicDBObject("s_i_id", new BasicDBObject("$in", itemids)));
-                andQuery.put("$and", obj);
-                MongoCursor<Document> items_cursor = stock_collection.find(andQuery).iterator();
-                Map<Integer, Double> orderItemQuantity = new HashMap<Integer, Double>();
+            }
+            andQuery = new BasicDBObject();
+            obj = new ArrayList<BasicDBObject>();
+            obj.add(new BasicDBObject("s_w_id", w_id));
+            obj.add(new BasicDBObject("s_i_id", new BasicDBObject("$in",itemids)));
+            andQuery.put("$and", obj);
+            MongoCursor<Document>  items_cursor = stocks_collection.find(andQuery).iterator();
+
+            Map<Integer, Double> orderItemQuantity = new HashMap<Integer, Double>();
                 while (items_cursor.hasNext()) {
-                    next = cursor.next();
+                   Document next = items_cursor.next();
                     int item_id = (Integer) next.get("s_i_id");
                     double quantity = next.getDouble("s_quantity");
                     orderItemQuantity.put(item_id, quantity);
@@ -88,8 +98,13 @@ public class PopularItemTransaction {
                 //Iterate over order-item map and get max item id for each order
                 for (Map.Entry<Integer, List<Integer>> entry : orderItemsMapping.entrySet()) {
                     int popularItem = getMaxQuantity(entry.getValue(), orderItemQuantity);
+                    printWriter.write("(ITEM_NAME, ITEM_QUANTITY, PERCENTAGE OF ORDERS IN S THAT CONTAINS THIS ITEM)" +
+                            "(" + items_name_map.get(popularItem) + "," + orderItemQuantity.get(popularItem)
+                            + ", " + ", " + ((itemOrdersMap.get(popularItem).size() / orderItemsMapping.size()) * 100) + "%)\n");
                 }
-            }
+            printWriter.write("\n");
+            printWriter.flush();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

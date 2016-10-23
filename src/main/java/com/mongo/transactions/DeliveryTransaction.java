@@ -27,7 +27,6 @@ public class DeliveryTransaction {
     {
         try
         {
-            ArrayList<MongoCursor<Document>> listofCursors = new ArrayList<MongoCursor<Document>>();
             for(int i=1; i<=10; i++){
                 BasicDBObject andQuery = new BasicDBObject();
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
@@ -43,7 +42,7 @@ public class DeliveryTransaction {
                     Document next = cursor.next();
                     int order_id = (Integer) next.get("o_id");
                     int d_id = (Integer)next.get("o_d_id");
-                    int c_id = (Integer)next.get("c_id");
+                    int c_id = (Integer)next.get("o_c_id");
                     ArrayList orders = (ArrayList) next.get("o_items");
                     double ol_amt_sum = 0;
 

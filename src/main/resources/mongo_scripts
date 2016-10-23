@@ -4,8 +4,18 @@ mongoimport --db thehood --collection customer --drop --file C:/DD/D8-data/csvFI
 mongoimport --db thehood --collection items --drop --file C:/DD/D8-data/csvFIles_1/items.json
 mongoimport --db thehood --collection warehouse --drop --file C:/DD/D8-data/csvFIles_1/warehouse.json
 
-db.orders.createIndex({o_w_id : 1 , o_d_id : 1,o_id : 1})
+db.orders.createIndex({o_w_id : 1 , o_d_id : 1 , o_id : 1})
+db.orders.createIndex({o_w_id : 1 , o_d_id : 1 , o_c_id : 1 , o_id : -1})
+db.orders.createIndex({o_w_id : 1 , o_d_id : 1 , o_carrier_id : 1 , o_id : 1})
+
 db.stock.createIndex({s_w_id : 1 , s_i_id : 1})
-db.warehouse.createIndex({w_id : 1 , d_w_id : 1})
-db.customer.createIndex({c_w_id : 1 , c_d_id : 1,c_id : 1})
+db.stock.createIndex({s_w_id : 1 , s_i_id : 1 , s_quantity : 1})
+
+db.warehouse.createIndex({w_id : 1 , d_id : 1})
+
+db.customer.createIndex({c_w_id : 1 , c_d_id : 1 , c_id : 1})
+db.customer.createIndex({c_balance : -1})
+
 db.items.createIndex({s_i_id : 1})
+
+
