@@ -1,9 +1,6 @@
 package com.mongo;
 
-import com.mongo.transactions.DeliveryTransaction;
-import com.mongo.transactions.NewOrderTransaction;
-import com.mongo.transactions.OrderStatusTransaction;
-import com.mongo.transactions.PaymentTransaction;
+import com.mongo.transactions.*;
 import com.mongo.utilities.Lucene;
 import com.mongodb.Mongo;
 import com.mongodb.client.MongoDatabase;
@@ -40,7 +37,7 @@ public class TransactionDriver {
         this.transactionDir = transactionDir;
     }
 
-   // @Override
+    // @Override
     /*
     public void run() {
         int noOfTransactionsExecuted = readTransactionFiles(lucene, printWriter);
@@ -73,13 +70,16 @@ public class TransactionDriver {
         PaymentTransaction paymentTransaction = new PaymentTransaction(session);
         OrderStatusTransaction orderStatusTransaction = new OrderStatusTransaction(session);
         DeliveryTransaction deliveryTransaction = new DeliveryTransaction(session);
+        StockLevelTransaction stockLevelTransaction = new StockLevelTransaction(session);
+        PopularItemTransaction popularItemTransaction = new PopularItemTransaction(session);
+        TopBalanceTransaction topBalanceTransaction = new TopBalanceTransaction(session);
         try {
             BufferedReader br = new BufferedReader(new FileReader(transactionDir + fname));
             while ((line = br.readLine()) != null) {
                 if (cnt % mod == 0) {
                     long millis = System.currentTimeMillis() - startInMs;
-                  String diff = format("%02dmin%02dsec", TimeUnit.MILLISECONDS.toMinutes(millis),
-                    TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+                    String diff = format("%02dmin%02dsec", TimeUnit.MILLISECONDS.toMinutes(millis),
+                            TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
                     );
                     logger.info("["+threadName+"]timediff-" + diff + ",total-" + cnt + ",N-" + t1cnt + ",P-" + t2cnt + ",D-" + t3cnt + ",O-" + t4cnt + ",S-" + t5cnt + ",I-" + t6cnt + ",T-" + t7cnt + ",unknown-" + t8cnt + ",transactions-" + noOfTransactionsExecuted);
                 }
@@ -94,7 +94,7 @@ public class TransactionDriver {
                 double threshold = 0.0;
                 int lastLOrders = 0;
                 ++cnt;
-                if(tranType.equals("NNN"))
+                if(tranType.equals("N"))
                 {
                     ++t1cnt;
                     c_id = Integer.parseInt(content[1]);
@@ -112,7 +112,7 @@ public class TransactionDriver {
                     newOrderTransaction.newOrderTransaction(w_id, d_id, c_id, itemlineinfo,session,printWriter);
                     ++noOfTransactionsExecuted;
                 }
-                else if(tranType.equals("PPP"))
+                else if(tranType.equals("P"))
                 {
                     ++t2cnt;
                     w_id = Integer.parseInt(content[1]);
@@ -122,7 +122,7 @@ public class TransactionDriver {
                     paymentTransaction.setPayment(w_id, d_id, c_id, payment,printWriter);
                     ++noOfTransactionsExecuted;
                 }
-                else if (tranType.equals("OO"))
+                else if (tranType.equals("O"))
                 {
                     ++t4cnt;
                     w_id = Integer.parseInt(content[1]);
@@ -139,79 +139,32 @@ public class TransactionDriver {
                     deliveryTransaction.readDeliveryTransaction(w_id, carrier_id,printWriter);
                     noOfTransactionsExecuted++;
                 }
-                /*
-                switch (trantype) {
-                    case 'N':
-                        ++t1cnt;
-                        c_id = Integer.parseInt(content[1]);
-                        w_id = Integer.parseInt(content[2]);
-                        d_id = Integer.parseInt(content[3]);
-                        int m = Integer.parseInt(content[4]);
-                        ArrayList<String> itemlineinfo = new ArrayList<String>();
-                        // read m line
-                        while (m > 0) {
-                            --m;
-                            String itemline = br.readLine();
-                            if (!(itemline == null))
-                                itemlineinfo.add(itemline);
-                        }
-                       // new NewOrderTransaction().newOrderTransaction(w_id, d_id, c_id, itemlineinfo, session, lucene, printWriter);
-                        ++noOfTransactionsExecuted;
-                        break;
-
-                    case 'P':
-                        ++t2cnt;
-                        w_id = Integer.parseInt(content[1]);
-                        d_id = Integer.parseInt(content[2]);
-                        c_id = Integer.parseInt(content[3]);
-                        payment = Double.parseDouble(content[4]);
-                        new PaymentTransaction().setPayment(w_id, d_id, c_id, payment, session,printWriter);
-                        ++noOfTransactionsExecuted;
-                        break;
-
-                    case "D":
-                        ++t3cnt;
-                        w_id = Integer.parseInt(content[1]);
-                        carrier_id = Integer.parseInt(content[2]);
-                        new DeliveryTransaction().readDeliveryTransaction(w_id, carrier_id, session, printWriter);
-                        noOfTransactionsExecuted++;
-                        break;
-                    case "O":
-                        ++t4cnt;
-                        w_id = Integer.parseInt(content[1]);
-                        d_id = Integer.parseInt(content[2]);
-                        c_id = Integer.parseInt(content[3]);
-                        new OrderStatusTransaction().readOrderStatus(w_id, d_id, c_id, session, lucene, printWriter);
-                        ++noOfTransactionsExecuted;
-                        break;
-                    case "S":
-                        ++t5cnt;
-                        w_id = Integer.parseInt(content[1]);
-                        d_id = Integer.parseInt(content[2]);
-                        threshold = Integer.parseInt(content[3]);
-                        lastLOrders = Integer.parseInt(content[4]);
-                        new StockLevelTransaction().checkStockThreshold(w_id, d_id, threshold, lastLOrders, session, lucene, printWriter);
-                        ++noOfTransactionsExecuted;
-                        break;
-                    case "I":
-                        ++t6cnt;
-                        w_id = Integer.parseInt(content[1]);
-                        d_id = Integer.parseInt(content[2]);
-                        lastLOrders = Integer.parseInt(content[3]);
-                        new PopularItemTransaction().checkPopularItem(w_id, d_id, lastLOrders, session, printWriter, lucene);
-                        ++noOfTransactionsExecuted;
-                        break;
-                    case "T":
-                        ++t7cnt;
-                        new TopBalanceTransaction().getTopBalance(session, printWriter,lucene);
-                        ++noOfTransactionsExecuted;
-                        break;
-                    default:
-                        ++t8cnt;
-                        logger.info("unknown transaction type " + tranType + " in count " + noOfTransactionsExecuted + " for thread " + this.threadName);
-                    */
+                else if (tranType.equals("S"))
+                {
+                    ++t5cnt;
+                    w_id = Integer.parseInt(content[1]);
+                    d_id = Integer.parseInt(content[2]);
+                    threshold = Integer.parseInt(content[3]);
+                    lastLOrders = Integer.parseInt(content[4]);
+                    stockLevelTransaction.checkStockThreshold(w_id, d_id, threshold, lastLOrders,printWriter);
+                    ++noOfTransactionsExecuted;
                 }
-            //}
+                else if (tranType.equals("I"))
+                {
+                    ++t6cnt;
+                    w_id = Integer.parseInt(content[1]);
+                    d_id = Integer.parseInt(content[2]);
+                    lastLOrders = Integer.parseInt(content[3]);
+                    popularItemTransaction.checkPopularItem(w_id, d_id, lastLOrders,printWriter);
+                    ++noOfTransactionsExecuted;
+                }
+                else if(tranType.equals("T"))
+                {
+                    ++t7cnt;
+                    topBalanceTransaction.getTopBalance(printWriter);
+                    ++noOfTransactionsExecuted;
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("Failure in executing transaction for thread: " + threadName);
