@@ -2,20 +2,17 @@ package com.mongo;
 
 import com.mongo.transactions.*;
 import com.mongo.utilities.Lucene;
-import com.mongodb.Mongo;
 import com.mongodb.client.MongoDatabase;
 import org.apache.log4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
-
+import static com.mongo.TransactionClient.startTime;
 import static java.lang.String.*;
 
-public class TransactionDriver {
+public class TransactionDriver implements Runnable {
     private static Logger logger = Logger.getLogger(TransactionDriver.class);
     private MongoDatabase session;
     private Lucene lucene;
@@ -24,10 +21,11 @@ public class TransactionDriver {
     private long startTimeOfTransaction;
     private int currentThread;
     private String transactionDir;
-
+    private static int noOfClientsDone = 0;
+    static int totalNumberOfTransactionsProcessed = 0;
     public TransactionDriver(){}
 
-    public TransactionDriver(MongoDatabase session, Lucene lucene, PrintWriter printWriter, String threadName, Date startTime, int currentThread, String transactionDir) {
+    public TransactionDriver(MongoDatabase session, PrintWriter printWriter, String threadName,int currentThread, String transactionDir) {
         this.session = session;
         this.lucene = lucene;
         this.printWriter = printWriter;
@@ -37,24 +35,36 @@ public class TransactionDriver {
         this.transactionDir = transactionDir;
     }
 
-    // @Override
-    /*
-    public void run() {
-        int noOfTransactionsExecuted = readTransactionFiles(lucene, printWriter);
-        logger.info("["+threadName+"]Ended executing transactions for the thread ::" + threadName + " total transactions=" + noOfTransactionsExecuted + " with file " + currentThread + ".txt");
-        long transactionTimeInMillis = System.currentTimeMillis() - startTimeOfTransaction;
-        TransactionClient.totalNumberOfTransactionsProcessed += noOfTransactionsExecuted;
-        String diff = format("%02dmin%02dsec", TimeUnit.MILLISECONDS.toMinutes(transactionTimeInMillis),
-                TimeUnit.MILLISECONDS.toSeconds(transactionTimeInMillis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(transactionTimeInMillis))
-        );
-        logger.info("["+threadName+"]Total Number of transactions processed: " + TransactionClient.totalNumberOfTransactionsProcessed + " in "+ diff);
-        double transactionsPerSecond = (double) TransactionClient.totalNumberOfTransactionsProcessed / TimeUnit.MILLISECONDS.toSeconds(transactionTimeInMillis);
-        logger.info("["+threadName+"]Transaction throughput (number of transactions processed per second)::" + transactionsPerSecond);
-        session.close();
-        System.exit(0);
-    }*/
+    public void start()
+    {
+        try {
+            Thread t = new Thread(this, threadName);
+            t.start();
+        }
+        catch (Exception e)
+        {}
+    }
 
-    public int readTransactionFiles(Lucene lucene, PrintWriter printWriter) {
+    public void run() {
+        int noOfTransactionsExecuted = readTransactionFiles(printWriter);
+        logger.info("["+threadName+"]Ended executing transactions for the thread ::" + threadName + ", Total transactions = " + noOfTransactionsExecuted + " for the file " + currentThread + ".txt");
+        totalNumberOfTransactionsProcessed += noOfTransactionsExecuted;
+        noOfClientsDone ++;
+        if(noOfClientsDone == TransactionClient.clientCount)
+        {
+
+            long timeInMs = System.currentTimeMillis() - startTime;
+            String diff = format("%02dmin%02dsec", TimeUnit.MILLISECONDS.toMinutes(timeInMs),
+                    TimeUnit.MILLISECONDS.toSeconds(timeInMs) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeInMs))
+            );
+            logger.info("[Total Number of transactions processed: " + totalNumberOfTransactionsProcessed);
+            double transactionsPerSecond = (double) totalNumberOfTransactionsProcessed / TimeUnit.MILLISECONDS.toSeconds(timeInMs);
+            logger.info("Total elapsed time for processing the transactions (in seconds) : " + TimeUnit.MILLISECONDS.toSeconds(timeInMs) + " seconds");
+            logger.info("Transaction throughput (number of transactions processed per second): " + transactionsPerSecond);
+        }
+    }
+
+    public int readTransactionFiles(PrintWriter printWriter) {
         /*
         logger.info("["+threadName+"]Started executing transactions for file " + currentThread + ".txt");
 

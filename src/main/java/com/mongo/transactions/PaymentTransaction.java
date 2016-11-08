@@ -3,13 +3,11 @@ package com.mongo.transactions;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
-
 import static com.mongo.transactions.LocalCache.customer_map;
 import static com.mongo.transactions.LocalCache.district_map;
 import static com.mongo.transactions.LocalCache.warehouse_map;

@@ -2,16 +2,12 @@ package com.mongo.transactions;
 
 import java.io.PrintWriter;
 import java.util.*;
-
-import com.mongo.Item;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
-
-import javax.print.Doc;
 
 public class DeliveryTransaction {
 

@@ -6,12 +6,10 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
-import org.bson.codecs.DoubleCodec;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
 import static com.mongo.transactions.LocalCache.customer_map;
 
 public class OrderStatusTransaction {
@@ -62,8 +60,17 @@ public class OrderStatusTransaction {
                     printWriter.write("Item number: " + doc.getInteger("i_id") + " | "
                             + "Warehouse number: " + doc.getInteger("supply_w_id")
                             + " | " + "Quantity number: " + doc.get("i_quantity")
-                            + " | " + "Total price: " + doc.getDouble("i_amount")
-                            + " | " + "Date and time of delivery: " + doc.getString("i_delivery_d") + "\n");
+                            + " | " + "Total price: " + doc.getDouble("i_amount"));
+
+                    Object delivery_d = doc.get("i_delivery_d");
+                    if(delivery_d == null || delivery_d.toString().equals(""))
+                    {
+                        printWriter.write(" | " + "Date and time of delivery: None " + "\n");
+                    }
+                    else
+                    {
+                        printWriter.write(" | " + "Date and time of delivery: " + (Date)delivery_d + "\n");
+                    }
                 }
             }
             printWriter.write("\n");

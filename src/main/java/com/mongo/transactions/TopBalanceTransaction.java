@@ -4,20 +4,13 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.sun.org.apache.xml.internal.security.algorithms.implementations.IntegrityHmac;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.bson.Document;
-
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
 import static com.mongo.transactions.LocalCache.customer_map;
 import static com.mongo.transactions.LocalCache.district_map;
 import static com.mongo.transactions.LocalCache.warehouse_map;
-
 
 public class TopBalanceTransaction {
 

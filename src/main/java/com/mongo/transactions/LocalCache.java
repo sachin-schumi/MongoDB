@@ -5,8 +5,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
-
-import javax.print.Doc;
 import java.util.*;
 
 /**
@@ -22,12 +20,10 @@ public class LocalCache {
     public static Map<String,String > warehouse_map = new HashMap<String,String >();
     public static Map<String,String > district_map = new HashMap<String,String >();
 
-    public void loadIntoCache()
+    public void loadIntoCache(Properties properties)
     {
         try {
-            Properties properties = Props.loadProps();
             MongoDatabase sesion = MongoSession.getSession(properties);
-
             MongoCollection table = sesion.getCollection("items");
             MongoCursor<Document> cursor = table.find().iterator();
             while(cursor.hasNext()) {

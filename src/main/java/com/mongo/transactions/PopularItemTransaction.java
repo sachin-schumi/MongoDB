@@ -5,10 +5,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
-
 import java.io.PrintWriter;
 import java.util.*;
-
 import static com.mongo.transactions.LocalCache.customer_map;
 import static com.mongo.transactions.LocalCache.d_next_oid_map;
 import static com.mongo.transactions.LocalCache.items_name_map;

@@ -7,7 +7,6 @@ import com.mongodb.util.JSON;
 import org.bson.Document;
 import java.io.PrintWriter;
 import java.util.*;
-
 import static com.mongo.transactions.LocalCache.*;
 
 /**
@@ -74,7 +73,7 @@ public class NewOrderTransaction {
                 newDocument = new BasicDBObject().append("$inc",
                         new BasicDBObject().append("s_quantity", -(stockQuantity-adjustedQuantiy) )
                                 .append("s_ytd", stockQuantity).append("s_order_cnt",1).append("s_remote_cnt",1));
-               stock_collection.updateOne(new BasicDBObject().append("s_w_id", w_id).append("s_i_id", ol_i_id)
+                stock_collection.updateOne(new BasicDBObject().append("s_w_id", w_id).append("s_i_id", ol_i_id)
                         , newDocument);
 
                 // print info
