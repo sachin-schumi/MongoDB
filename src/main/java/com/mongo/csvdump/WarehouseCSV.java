@@ -5,10 +5,8 @@ import com.opencsv.CSVReader;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * Created by sachin on 21/10/2016.
@@ -17,7 +15,30 @@ public class WarehouseCSV {
 
     private static Logger logger = Logger.getLogger(WarehouseCSV.class);
 
+    private static Map<String,String> districtMap = new HashMap<String,String>();
+
+    public void getDistrict(Properties properties)
+    {
+        try {
+            String csv_files_path = properties.getProperty("csv_files_path");
+            InputStream inputStream = new FileInputStream(csv_files_path + "district.csv");
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            CSVReader warehouseCsv = new CSVReader(inputStreamReader);
+            Iterator<String[]> iterator = warehouseCsv.iterator();
+            Lucene lucene = new Lucene();
+            while(iterator.hasNext()){
+                String[] row = iterator.next();
+                String line = String.join(",", row);
+                districtMap.put(row[0]+","+row[1],line);
+            }
+        }
+        catch (Exception e)
+        {}
+    }
+
+
     public void prepareCsv(Properties properties) {
+        getDistrict(properties);
         String csv_dump_path = properties.getProperty("csv_dump_path");
         String csv_files_path = properties.getProperty("csv_files_path");
         PrintWriter pw = null;
@@ -46,7 +67,8 @@ public class WarehouseCSV {
                 String districtJSON = "";
                 for(int i = 1;i<=10;i++)
                 {
-                    String[] district = lucene.search(warehouseRow[0]+i, "district-id", "district-csv").get(0).split(",");
+                    String[] district = districtMap.get(warehouseRow[0]+","+i).split(",");
+                    //String[] district = lucene.search(warehouseRow[0]+""+i, "district-id", "district-csv").get(0).split(",");
                     districtJSON += "{\"d_w_id\":"+district[0] + ",\"d_id\":"+district[1]+ ",\"d_name\":\""+district[2]
                             + "\",\"d_street_1\":\""+district[3]+ "\",\"d_street_2\":\""+district[4]+ "\"" +
                             ",\"d_city\":\""+district[5]+ "\",\"d_state\":\""+district[6]+"\",\"d_zip\":\""+district[7]

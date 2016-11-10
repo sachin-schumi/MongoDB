@@ -19,11 +19,11 @@ public class CsvLoader {
             InputStream inputStream = new FileInputStream(configFilePath);
             properties = new Properties();
             properties.load(inputStream);
-            lucene.initSearch(properties);
-            //new NewOrderCSV().prepareCsv(lucene, properties);
+            new NewOrderCSV().prepareCsv(properties);
             new StockCSV().prepareCsv(properties);
-            //new WarehouseCSV().prepareCsv(properties);
-            //new CustomerCSV().prepareCsv(properties);
+            new CustomerCSV().prepareCsv(properties);
+            new ItemsCSV().prepareCsv(properties);
+            new WarehouseCSV().prepareCsv(properties);
         } catch (Exception e) {
             e.printStackTrace();
         }
