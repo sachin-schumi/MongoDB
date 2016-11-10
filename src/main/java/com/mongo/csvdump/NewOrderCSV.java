@@ -1,6 +1,5 @@
 package com.mongo.csvdump;
 
-import com.mongo.utilities.Lucene;
 import com.opencsv.CSVReader;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -38,7 +37,6 @@ public class NewOrderCSV {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             CSVReader warehouseCsv = new CSVReader(inputStreamReader);
             Iterator<String[]> iterator = warehouseCsv.iterator();
-            Lucene lucene = new Lucene();
             List<String> order_items = new ArrayList<String>();
             String prev_key = "1,1,1";
             String orderItemList = "";

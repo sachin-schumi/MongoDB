@@ -1,6 +1,5 @@
 package com.mongo.csvdump;
 
-import com.mongo.utilities.Lucene;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -13,7 +12,6 @@ public class CsvLoader {
 
     public static void main(String[] args){
         Properties properties =null;
-        Lucene lucene = new Lucene();
         try {
             String configFilePath = System.getenv("DD_CONFIG_FILE");
             InputStream inputStream = new FileInputStream(configFilePath);

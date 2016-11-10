@@ -1,6 +1,5 @@
 package com.mongo.csvdump;
 
-import com.mongo.utilities.*;
 import com.opencsv.CSVReader;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -25,7 +24,6 @@ public class WarehouseCSV {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             CSVReader warehouseCsv = new CSVReader(inputStreamReader);
             Iterator<String[]> iterator = warehouseCsv.iterator();
-            Lucene lucene = new Lucene();
             while(iterator.hasNext()){
                 String[] row = iterator.next();
                 String line = String.join(",", row);
@@ -49,7 +47,6 @@ public class WarehouseCSV {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             CSVReader warehouseCsv = new CSVReader(inputStreamReader);
             Iterator<String[]> iterator = warehouseCsv.iterator();
-            Lucene lucene = new Lucene();
             while(iterator.hasNext()){
                 List<String> warehouseRowList = new ArrayList<String>();
                 String[] warehouseRow = iterator.next();

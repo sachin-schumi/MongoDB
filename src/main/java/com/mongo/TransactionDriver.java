@@ -1,7 +1,6 @@
 package com.mongo;
 
 import com.mongo.transactions.*;
-import com.mongo.utilities.Lucene;
 import com.mongodb.client.MongoDatabase;
 import org.apache.log4j.Logger;
 import java.io.BufferedReader;
@@ -15,7 +14,6 @@ import static java.lang.String.*;
 public class TransactionDriver implements Runnable {
     private static Logger logger = Logger.getLogger(TransactionDriver.class);
     private MongoDatabase session;
-    private Lucene lucene;
     private PrintWriter printWriter;
     private String threadName;
     private long startTimeOfTransaction;
@@ -27,7 +25,6 @@ public class TransactionDriver implements Runnable {
 
     public TransactionDriver(MongoDatabase session, PrintWriter printWriter, String threadName,int currentThread, String transactionDir) {
         this.session = session;
-        this.lucene = lucene;
         this.printWriter = printWriter;
         this.threadName = threadName;
         this.startTimeOfTransaction = System.currentTimeMillis();
