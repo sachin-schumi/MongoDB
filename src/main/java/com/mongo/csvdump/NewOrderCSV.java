@@ -117,6 +117,10 @@ public class NewOrderCSV {
 
                String orderLineItems = orderLine.get(orderRow[0] + ","+orderRow[1] + ","+orderRow[2]);
 
+                if(orderLineItems == null)
+                {
+                    orderLineItems = "\"o_items\":["+"]}";
+                }
                 op +=orderLineItems;
                 finalOutput.add(op);
                 if(cnt % 1000 == 0) {
