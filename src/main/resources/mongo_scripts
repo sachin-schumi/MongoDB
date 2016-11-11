@@ -15,6 +15,7 @@
 
 
 
+use thehood_d40;
 db.orders.createIndex({o_w_id : 1 , o_d_id : 1 , o_id : 1})
 db.orders.createIndex({o_w_id : 1 , o_d_id : 1 , o_c_id : 1 , o_id : -1})
 db.orders.createIndex({o_w_id : 1 , o_d_id : 1 , o_carrier_id : 1 , o_id : 1})

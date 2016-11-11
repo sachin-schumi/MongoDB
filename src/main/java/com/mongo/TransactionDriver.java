@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import static com.mongo.TransactionClient.startTime;
 import static java.lang.String.*;
@@ -21,6 +22,7 @@ public class TransactionDriver implements Runnable {
     private String transactionDir;
     private static int noOfClientsDone = 0;
     static int totalNumberOfTransactionsProcessed = 0;
+    static ArrayList<Double> throughputs = new ArrayList<Double>();
     public TransactionDriver(){}
 
     public TransactionDriver(MongoDatabase session, PrintWriter printWriter, String threadName,int currentThread, String transactionDir) {
@@ -46,18 +48,27 @@ public class TransactionDriver implements Runnable {
         int noOfTransactionsExecuted = readTransactionFiles(printWriter);
         logger.info("["+threadName+"]Ended executing transactions for the thread ::" + threadName + ", Total transactions = " + noOfTransactionsExecuted + " for the file " + currentThread + ".txt");
         totalNumberOfTransactionsProcessed += noOfTransactionsExecuted;
+        long timeInMs_thread = System.currentTimeMillis() - startTime;
+        double transactionsPerSecond_thread = (double) noOfTransactionsExecuted / TimeUnit.MILLISECONDS.toSeconds(timeInMs_thread);
+        throughputs.add(transactionsPerSecond_thread);
         noOfClientsDone ++;
         if(noOfClientsDone == TransactionClient.clientCount)
         {
-
             long timeInMs = System.currentTimeMillis() - startTime;
             String diff = format("%02dmin%02dsec", TimeUnit.MILLISECONDS.toMinutes(timeInMs),
                     TimeUnit.MILLISECONDS.toSeconds(timeInMs) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeInMs))
             );
-            logger.info("[Total Number of transactions processed: " + totalNumberOfTransactionsProcessed);
+            printWriter.write("\n"+"[Total Number of transactions processed: " + totalNumberOfTransactionsProcessed + "\n");
             double transactionsPerSecond = (double) totalNumberOfTransactionsProcessed / TimeUnit.MILLISECONDS.toSeconds(timeInMs);
-            logger.info("Total elapsed time for processing the transactions (in seconds) : " + TimeUnit.MILLISECONDS.toSeconds(timeInMs) + " seconds");
-            logger.info("Transaction throughput (number of transactions processed per second): " + transactionsPerSecond);
+            printWriter.write("Total elapsed time for processing the transactions  : " + diff + "\n");
+            printWriter.write("Transaction throughput (number of transactions processed per second): " + transactionsPerSecond+ "\n");
+            printWriter.write("Maximum throughput a : "+ Collections.max(throughputs)+ "\n");
+            printWriter.write("Minimum throughput : "+ Collections.min(throughputs)+ "\n");
+            double sum = 0;
+            for(Double d : throughputs)
+                sum += d;
+            printWriter.write("Average throughput : "+ sum/TransactionClient.clientCount+ "\n"  );
+            printWriter.flush();
         }
     }
 

@@ -107,7 +107,7 @@ public class NewOrderCSV {
                 }
                 String id = orderRow[0]+orderRow[1]+orderRow[2];
                 String formattedDate = formatDateAsIso8601(orderRow[7],"yyyy-MM-dd HH:mm:ss.S");
-                op += "{\"o_w_id\":"+orderRow[0]+",\"o_d_id\":"+orderRow[1]+",\"o_id\":"+orderRow[2]+",\"c_id\":"+orderRow[3]
+                op += "{\"o_w_id\":"+orderRow[0]+",\"o_d_id\":"+orderRow[1]+",\"o_id\":"+orderRow[2]+",\"o_c_id\":"+orderRow[3]
                         +",\"o_entry_d\":ISODate(\""+formattedDate+"\"),";
                 if(!orderRow[4].equals("null") )
                     op +="\"o_carrier_id\" : "+orderRow[4]+",";

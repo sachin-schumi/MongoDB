@@ -27,11 +27,12 @@ public class TransactionClient {
             InputStream inputStream = new FileInputStream(configFilePath);
             props.load(inputStream);
             PropertyConfigurator.configure(props);
-            PrintWriter printWriter = new PrintWriter(new File(properties.getProperty("output_path")));
+            PrintWriter printWriter  = null;
             System.out.println("Enter the number of clients:");
             try {
                 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
                 clientCount = Integer.parseInt(br.readLine());
+                printWriter = new PrintWriter(new File(properties.getProperty("output_path")+"_"+clientCount+".txt"));
             }catch (NumberFormatException e)
             {
                 System.out.println("Please enter a number for the number of clients....");

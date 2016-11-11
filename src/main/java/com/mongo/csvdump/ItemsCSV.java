@@ -1,6 +1,5 @@
 package com.mongo.csvdump;
 
-import com.mongo.utilities.Lucene;
 import com.opencsv.CSVReader;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

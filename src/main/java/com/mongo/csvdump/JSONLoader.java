@@ -8,7 +8,7 @@ import java.util.Properties;
 /**
  * Created by sachin on 22/10/2016.
  */
-public class CsvLoader {
+public class JSONLoader {
 
     public static void main(String[] args){
         Properties properties =null;
